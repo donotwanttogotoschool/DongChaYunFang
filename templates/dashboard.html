@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- 引入Font Awesome图标字体 -->
+    <!-- 引入 ECharts 和 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    /* 外框 */
+    /* 外框 */
+        .button-box {
+        position: relative;
+        width: 435px; 
+        height: auto; /* 高度自动适应内容 */
+        background: linear-gradient(145deg, #001f3f, #003366);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 
+            0 0 20px rgba(0, 207, 255, 0.7), /* 外发光 */
+            0 0 40px rgba(0, 207, 255, 0.5), 
+            inset 0 0 30px rgba(0, 207, 255, 0.2); /* 内发光 */
+        margin-bottom: 0px; /* 每个框体之间留一些空间 */
+        display: flex; /* 确保是flex布局 */
+        flex-direction: row; /* 设置为横向排列 */
+        justify-content: space-around; /* 均匀分布按钮 */
+        gap: 3px;
+    }
+        /* 装饰线条 */
+    .button-box .line {
+        position: absolute;
+        width: 2px;
+        height: 60px;
+        background: #00cfff;
+        box-shadow: 0 0 10px rgba(0, 207, 255, 0.6);
+    }
+        /* 标题框 */
+    .button-box .title-bar {
+        position: absolute;
+        top: -30px;
+        left: 20px;
+        width: 200px;
+        height: 40px;
+        background: #004080;
+        border-radius: 0 0 10px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 10px rgba(0, 207, 255, 0.5);
+        color: white;
+        font-weight: bold;
+    }
+    .tech-box {
+        position: relative;
+        width: 435px; 
+        height: auto; /* 高度自动适应内容 */
+        background: linear-gradient(145deg, #001f3f, #003366);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 
+            0 0 20px rgba(0, 207, 255, 0.7), /* 外发光 */
+            0 0 40px rgba(0, 207, 255, 0.5), 
+            inset 0 0 30px rgba(0, 207, 255, 0.2); /* 内发光 */
+        margin-bottom: 0px; /* 每个框体之间留一些空间 */
+    }
+
+    /* 标题框 */
+    .tech-box .title-bar {
+        position: absolute;
+        top: -30px;
+        left: 20px;
+        width: 200px;
+        height: 40px;
+        background: #004080;
+        border-radius: 0 0 10px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 10px rgba(0, 207, 255, 0.5);
+        color: white;
+        font-weight: bold;
+    }
+
+    /* 装饰线条 */
+    .tech-box .line {
+        position: absolute;
+        width: 2px;
+        height: 60px;
+        background: #00cfff;
+        box-shadow: 0 0 10px rgba(0, 207, 255, 0.6);
+    }
+
+    .line-top {
+        top: 20px;
+        right: 30px;
+    }
+
+    .line-bottom {
+        bottom: 20px;
+        left: 30px;
+    }
+
+    /* 图表容器自适应 */
+    canvas, .chart-container {
+        width: 100%;
+        height: 100%; /* 设置成父容器的 100% 高度 */
+    }
+        /* 标题栏整体样式 */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #002B55, #003366); /* 渐变背景 */
+            border-bottom: 2px solid #007ACC; /* 底部边框 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* 阴影效果 */
+        }
+
+        /* 左侧标题样式 */
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            color: #00CFFF;
+            font-weight: bold;
+            padding: 5px 15px;
+            border: 1px solid #00CFFF; /* 边框 */
+            border-radius: 20px 0 0 20px; /* 圆角 */
+            background: rgba(0, 0, 0, 0.3); /* 半透明背景 */
+        }
+
+        /* 右侧按钮和图标容器 */
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 图标样式 */
+        .header-icon {
+            font-size: 20px;
+            color: #00CFFF;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .header-icon:hover {
+            color: #00A3CC; /* 悬停时颜色变化 */
+        }
+
+        /* 退出按钮样式 */
+        .logout-button {
+            padding: 5px 15px;
+            font-size: 14px;
+            color: #FFFFFF;
+            background: #007ACC;
+            border: 1px solid #007ACC;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-button:hover {
+            background: #005B99; /* 悬停时背景颜色 */
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: -10px;
+            margin-top: 30px;
+        }
+        .button-group button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #5099e8;
+            color: white;
+            font-size: 16px;
+        }
+        .button-group button.active {
+            background-color: #103b69;
+        }
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        #dashboard {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px;
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        #left, #center, #right {
+            flex: 1;
+            padding: 2px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0);
+            border-radius: 8px;
+            margin: 0px;
+            z-index: 10;
+        }
+        #left {
+            margin-top: 25px;
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            z-index: 10;
+            gap: 15px; /* 元素之间的间距 */
+            align-items: center; /* 垂直居中对齐 */
+        }
+        #center {
+            text-align: center;
+            font-size: 1.5em;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            z-index: 10;
+        }
+        .total-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+        .number-card {
+            width: 60px;
+            height: 80px;
+            margin: 0 5px;
+            background-color: #003366;
+            border: 2px solid #00cfff;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00cfff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 10;
+        }
+        .number-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        #right {
+            margin-top: 25px;
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0);
+            border-radius: 8px;
+            z-index: 10;
+            gap: 30px; /* 设置子元素之间的垂直距离 */
+        }
+        button {
+            padding: 1rem;
+            font-size: 1.2em;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+        #vulnIntroButton {
+        padding: 1.5rem 1rem; /* 调整填充，使其在竖向时保持良好外观 */
+        font-size: 1.2em;
+        background: linear-gradient(145deg, #0066cc, #003366); /* 渐变背景 */
+        color: white;
+        border: 2px solid #00cfff;
+        border-radius: 10px; /* 更大的圆角，使按钮看起来现代化 */
+        transition: background-color 0.3s, box-shadow 0.3s; /* 添加过渡效果 */
+        width: 110px; /* 控制按钮宽度 */
+        height: 60px; /* 控制按钮高度 */
+        flex-wrap: nowrap;
+        text-align: center; /* 使文本居中对齐 */
+        display: flex;
+        flex-direction: row ;
+        justify-content: center;
+        align-items: center;
+        gap: 5px; /* 控制文字与其他内容的间距 */
+        box-shadow: 
+        0 0 20px rgba(0, 207, 255, 0.7), /* 外部发光效果 */
+        inset 0 0 15px rgba(0, 207, 255, 0.3); /* 内部发光效果 */
+    }
+
+#vulnIntroButton:hover {
+    background: linear-gradient(145deg, #0056b3, #002f5d); /* 鼠标悬停时的背景变化 */
+    box-shadow: 
+        0 0 30px rgba(0, 207, 255, 0.9), 
+        inset 0 0 25px rgba(0, 207, 255, 0.5); /* 加强悬停时的发光效果 */
+}
+
+#vulnIntroButton::before {
+    font-size: 1.2em;
+    color: #00cfff;
+}
+
+#vulnIntroButton::after {
+    font-size: 1em;
+    color: #00cfff;
+    margin-top: 10px; /* 控制下方文字的距离 */
+}
+
+        #text-box {
+            flex-grow: 1; /* 文本框占据剩余空间 */
+            background-color: rgba(203, 218, 234, 0.5); /* 蓝色透明背景 */
+            border: 2px solid #0056b3; /* 深蓝色边框 */
+            border-radius: 5px; /* 边角圆润 */
+            padding: 10px; /* 内边距 */
+            max-height: 200px; /* 限制高度 */
+            width: 350px;
+            overflow-y: auto; /* 添加垂直滚动条 */
+            margin-top: 0px; /* 按钮与文本框之间的间距 */
+            margin-left: 20px;
+        }
+        .entry h3 {
+            font-size: 1.2em; /* 增大漏洞名称的字体 */
+            margin: 0; /* 去掉默认边距 */
+        }
+
+        .entry p {
+            font-size: 0.9em; /* 缩小漏洞简介的字体 */
+            margin: 5px 0; /* 调整段落间距 */
+        }
+
+        hr {
+            border: 1px solid #0056b3; /* 设置横杠的颜色 */
+            margin: 10px 0; /* 调整横杠的间距 */
+        }
+        canvas {
+            max-width: 100%;
+            z-index: 10;
+        }
+        #totalVulnsLabel {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: white;
+            z-index: 10;
+        }
+        .gif-container {
+        position: relative; /* 确保子元素以容器为参考 */
+        margin-top: -50px;
+        text-align: center;
+        z-index: -5;
+        width: 100%; /* 设置宽度以确保背景图片覆盖容器 */
+        height: 400px; /* 根据实际背景图的高度设置 */
+        background-image: url('{{ url_for("static", filename="/新主页面-源文件/转动地球的背景.png") }}'); /* 引入背景图片 */
+        background-size: cover; /* 让背景图片覆盖整个容器 */
+        background-position: -85px 23px; /* 背景图片顶部居中 */
+    }
+
+    .gif-img {
+        position: relative; /* 确保图片位于背景图片上层 */
+        width: 320px;
+        height: auto;
+        z-index: 10; /* 确保 GIF 位于前面 */
+    }
+
+        /* Flexbox 容器 */
+        .flex-container {
+        display: flex;
+        align-items: flex-start; /* 按钮与文本框顶部对齐 */
+        gap: 0px; /* 调整按钮和文本框之间的间距 */
+        }
+
+        #vulnDataTable {
+        height: 300px; /* 设定一个固定高度，确保表格可以滚动 */
+        overflow-y: hidden; /* 隐藏滚动条（默认状态） */
+        }
+
+        #dataTable td {
+        color: white; /* 设置表格头部和单元格文本颜色为白色 */
+        }
+        #dataTable th {
+        position: sticky; /* 使用 sticky 来固定表头 */
+        top: 0; /* 表头距离顶部的距离 */
+        background-color: #003366; /* 背景颜色 */
+        z-index: 10; /* 确保表头位于内容上层 */
+        color: white; /* 字体颜色 */
+        padding: 2px; /* 内边距 */
+        text-align: left; /* 文字居左 */
+        font-size: 18px; /* 设置表头文字大小为12px */
+        }
+
+        #dataTable {
+        border-collapse: collapse; /* 让表格的边框更整齐 */
+        }
+
+        #dataTable td {
+        padding: 8px; /* 设置单元格内边距 */
+        }
+
+        #dataTable tr:hover {
+        background-color: rgba(0, 122, 204, 0.1); /* 可选：悬停效果 */
+        }
+
+        #backButton {
+        cursor: pointer; /* 添加鼠标悬停样式 */
+        }
+    </style>
+</head>
+<body>
+     <!-- 标题栏 -->
+     <div id="header">
+        <!-- 左侧标题 -->
+        <div class="header-left">
+            <span class="header-title">洞察云防 —— 漏洞态势观测站</span>
+        </div>
+        <!-- 右侧图标和按钮 -->
+        <div class="header-right">
+            <i class="fas fa-shield-alt header-icon"></i> <!-- 防护图标 -->
+            <i class="fas fa-cog header-icon"></i>       <!-- 设置图标 -->
+            <button class="logout-button" onclick="window.location.href='http://127.0.0.1:5000/'">退出</button> <!-- 退出按钮 -->
+        </div>
+    </div>
+    <!--标题栏end-->
+    <!-- 背景视频 -->
+    <video id="background-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='back_ground.mp4') }}" type="video/mp4">
+        您的浏览器不支持 HTML5 视频。
+    </video>
+
+    <div id="particles-js"></div>
+
+    <div id="dashboard">
+        <div id="left">
+            <div class="tech-box">
+                <div class="title-bar">各种类漏洞数量统计</div> <!-- 标题 -->
+                <canvas id="vulnChart" style="width: 300px; height: 160px;"></canvas>
+            </div>
+            <div class="tech-box">
+                <div class="title-bar">高危/超危漏洞数量统计</div> <!-- 标题 -->
+                <div id="vulnPieChart" style="width: 400px; height: 160px;top: -4%;"></div> 
+            </div>
+            <div class="tech-box">
+                <div class="title-bar">高危/超危漏洞占比统计</div> <!-- 标题 -->
+                <!--<div id="gaugeChart" style="width: 300px; height: 160px;"></div> -->
+                <div id="vulnDataTable">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>漏洞类型</th>
+                                <th>漏洞数量</th>
+                                <th>危险等级</th>
+                                <th>漏洞占比</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="center">
+            <div id="totalVulnsLabel">漏洞总数：</div>
+            <div class="total-container" id="totalVulnsContainer">
+                <!-- 动态数字卡片将插入到这里 -->
+            </div>
+            <div class="gif-container">
+                <img src="{{ url_for('static', filename='转动地球.gif') }}" class="gif-img" alt="转动地球动画">
+            </div>
+            <div class="tech-box">
+                <!--<div class="title-bar">漏洞随时间变化统计</div> <!-- 标题 -->-->
+                <div id="monthBarChart" style="width: 100%; height: 300px;margin-top:-40px; "></div>
+                <div id="dailyLineChartContainer" style="display: none;margin-top:-60px; ">
+                    <button id="backButton" style="display: none; margin-top:-60px; margin-left:240px; margin-bottom:-185px;padding: 0.5rem 1.5rem; font-size: 0.5em; border-radius: 4px;z-index: 10;">返回</button>
+                    <div id="dailyLineChart" style="width: 450px; height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+        <div id="right">
+            <div class="tech-box">
+                <div class="title-bar">漏洞简介</div> <!-- 标题 -->
+                <!-- 使用 Flexbox 排列按钮和文本框 -->
+                <div class="flex-container">
+                    <!-- 添加的文本框 -->
+                    <div id="text-box">
+                        <div class="entry">
+                            <h3>SQL注入 (SQL Injection)</h3>
+                            <p>攻击者通过在输入字段中插入恶意SQL语句，操纵数据库查询，可能导致数据库被篡改、数据泄露或删除。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>代码问题 (Code Issues)</h3>
+                            <p>包括代码中的编写错误或设计不当，可能引发安全漏洞，如错误处理不当、未考虑边界情况、使用过时的库等。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>代码注入 (Code Injection)</h3>
+                            <p>攻击者通过输入恶意代码并让应用执行该代码，导致系统受控或数据泄露，通常发生在对用户输入验证不严的系统中。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>后置链接 (Backdoor)</h3>
+                            <p>这是一个攻击者或开发者故意留下的隐蔽访问方式，可以绕过正常的身份验证机制，获得对系统的控制。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>缓冲区错误 (Buffer Errors)</h3>
+                            <p>这类漏洞是由于向缓冲区写入超过其容量的数据导致的，可能会造成数据损坏或允许攻击者执行任意代码。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>加密问题 (Cryptographic Issues)</h3>
+                            <p>涉及加密机制的弱点，例如使用不安全的加密算法、不正确的密钥管理，可能导致数据被解密或篡改。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>竞争条件问题 (Race Condition)</h3>
+                            <p>多个进程或线程同时访问共享资源时，未正确同步操作顺序，可能导致意外行为或数据损坏，甚至让攻击者获取未授权访问。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>跨站脚本 (Cross-Site Scripting, XSS)</h3>
+                            <p>攻击者通过注入恶意脚本代码到网页中，诱使用户执行该脚本，导致数据泄露或篡改。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>跨站请求伪造 (Cross-Site Request Forgery, CSRF)</h3>
+                            <p>攻击者伪造受信任用户的请求，欺骗服务器执行用户的敏感操作，例如修改设置或进行资金转账。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>路径遍历 (Path Traversal)</h3>
+                            <p>攻击者通过操控文件路径，访问超出预期范围的系统文件或目录，从而泄露敏感信息或进行未授权的操作。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>命令注入 (Command Injection)</h3>
+                            <p>攻击者通过输入恶意命令并让服务器执行，可能控制服务器或窃取敏感信息，通常发生在执行系统命令时未对用户输入进行严格验证。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>日志信息泄露 (Log Information Leakage)</h3>
+                            <p>不适当记录或处理敏感数据到日志文件中，可能导致机密信息被泄露。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>授权问题 (Authorization Issues)</h3>
+                            <p>系统未正确限制用户对资源的访问权限，可能导致未授权用户访问敏感数据或执行限制操作。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>输入验证错误 (Input Validation Errors)</h3>
+                            <p>对用户输入未进行充分验证，导致恶意输入得以通过并引发漏洞，如注入攻击或缓冲区溢出。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>数字错误 (Numeric Errors)</h3>
+                            <p>数字溢出、下溢或计算精度错误导致意外行为或漏洞，可能被利用进行攻击或使系统失效。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>信任管理问题 (Trust Management Issues)</h3>
+                            <p>对系统间或用户间的信任管理不当，导致攻击者利用信任关系执行未授权操作，如通过社交工程进行的攻击。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>信息泄露 (Information Disclosure)</h3>
+                            <p>系统在未适当限制的情况下泄露敏感信息，可能帮助攻击者了解系统架构或用户数据。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>注入 (Injection)</h3>
+                            <p>包括各种将恶意数据注入系统并导致其执行未预期行为的攻击方式，涵盖SQL注入、代码注入、命令注入等。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>资源管理错误 (Resource Management Errors)</h3>
+                            <p>不当的资源分配、释放或管理导致系统失效、性能下降或出现安全漏洞，如内存泄露、文件句柄泄露等。</p>
+                        </div>
+                        <hr>
+                        <div class="entry">
+                            <h3>其他 (Others)</h3>
+                            <p>任何不属于常见分类但依然可能对系统构成安全威胁的漏洞，如特定行业的特殊安全问题或组合型攻击。</p>
+                        </div>
+        
+                    <!-- 可以根据需要添加更多条目 -->
+                </div>
+            </div>
+        </div>
+        <div class="button-box">
+            <div class="title-bar">按钮</div> <!-- 标题 -->
+         <button id="vulnIntroButton" onclick="window.location.href='/vulnerability_intro'">详细介绍</button>
+        <button id="vulnIntroButton" onclick="window.location.href='/word_cloud_map'">词云图</button>
+        <button id="vulnIntroButton" onclick="window.location.href='/predict'">预测</button>
+        </div>
+        <div class="tech-box">
+            <div class="title-bar">各危险等级厂商分布</div> <!-- 标题 -->
+            <div class="button-group">
+                <button class="severity-button active" data-severity="critical">超危</button>
+                <button class="severity-button" data-severity="high">高危</button>
+                <button class="severity-button" data-severity="medium">中危</button>
+                <button class="severity-button" data-severity="low">低危</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="vendorChart"></canvas>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <script>
+        // 使用 Particles.js 设置背景特效
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+        //仪盘表
+
+
+
+
+
+
+        // 各个危害等级的Top 10厂商数据
+        const datasets = {
+            critical: {
+                labels: ['美国PrestaShop公司', 'Siretta公司', '印度Projectworlds公司', '美国Ivanti公司', 'Kashipara公司', 
+                         '美国Wavelink公司', 'IDAttend公司', '美国Facebook公司', '美国npm公司', '捷克JetBrains公司'],
+                data: [93, 42, 28, 21, 14, 13, 12, 7, 6, 6]
+            },
+            high: {
+                labels: ['美国Apple公司', '美国Zoom公司', '美国GitLab公司', '美国F5公司', '美国PrestaShop公司', 
+                         '美国SolarWinds公司', '法国XWiki公司', 'ScienceLogic公司', '美国Autodesk公司', 'Campcodes公司'],
+                data: [59, 38, 37, 35, 30, 28, 25, 25, 24, 23]
+            },
+            medium: {
+                labels: ['美国GitLab公司', '美国Apple公司', '美国Mattermost公司', '奥地利Pimcore公司', '德国Nextcloud公司', 
+                         '捷克JetBrains公司', 'Line公司', '中国赞赞网络科技公司', '美国F5公司', '美国Liferay公司'],
+                data: [114, 72, 56, 52, 45, 32, 31, 28, 21, 20]
+            },
+            low: {
+                labels: ['美国GitLab公司', '美国Mattermost公司', '美国Apple公司', '德国Nextcloud公司', 'PKP公司', 
+                         '英国ARM公司', '美国Zoom公司', '美国Palantir公司', '捷克JetBrains公司', '美国HashiCorp公司'],
+                data: [14, 10, 9, 8, 5, 4, 4, 3, 3, 3]
+            }
+        };
+
+        // 初始化Chart.js图表
+        let currentChart;
+        function renderChart(severity) {
+            const ctx = document.getElementById('vendorChart').getContext('2d');
+            const data = datasets[severity];
+
+            // 销毁现有图表
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            // 创建新图表
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: '出现次数',
+                        data: data.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+            scales: {
+                x: {
+                    ticks: {
+                        color: 'white' // 设置X轴字体颜色为白色
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.2)' // 设置X轴网格线颜色为白色（带透明度）
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'white' // 设置Y轴字体颜色为白色
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.2)' // 设置Y轴网格线颜色为白色（带透明度）
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white' // 设置图例字体颜色为白色
+                    }
+                },
+                tooltip: {
+                    bodyColor: 'white', // 设置提示框字体颜色为白色
+                    titleColor: 'white', // 设置提示框标题颜色为白色
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)', // 设置提示框背景颜色
+                    borderColor: 'white', // 设置提示框边框颜色
+                    borderWidth: 1
+                }
+            }
+        }
+    });
+}
+
+        // 初始显示超危数据
+        renderChart('critical');
+
+        // 切换按钮点击事件
+        document.querySelectorAll('.severity-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.severity-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                renderChart(this.getAttribute('data-severity'));
+            });
+        });
+
+   window.onload = function () {
+        // fetch 请求
+        fetch('/data')
+            .then(response => response.json())
+            .then(data => {
+                // 初始化计数器和数据结构
+                const vulnCounts = {};  // 用于表格统计的漏洞数据
+                const vulnTypes = {};  // 用于柱状图的漏洞类型数据
+                let totalVulns = 0;  // 总漏洞数
+
+                // 遍历数据，统计总数、各类型数量及高危/超危漏洞数量
+                data.forEach(vuln => {
+                    const type = vuln.vulnerability_type;
+                    const severity = vuln.severity_level;
+
+                    // 统计总漏洞数
+                    totalVulns++;
+
+                    // 按类型统计漏洞数量
+                    vulnTypes[type] = (vulnTypes[type] || 0) + 1;
+
+                    // 统计高危和超危漏洞数量
+                    if (severity === '高危' || severity === '超危') {
+                        vulnCounts[type] = (vulnCounts[type] || 0) + 1;
+                    }
+                });
+
+                // 更新漏洞总数卡片
+                updateTotalVulns(totalVulns);
+
+                // 更新表格数据
+                updateVulnTable(vulnCounts, totalVulns);
+
+                // 设置自动滚动
+                setupTableAutoScroll();
+
+                // 绘制柱状图
+                renderBarChart(vulnTypes);
+
+                // 调用饼状图绘制函数
+                drawPieChart(vulnCounts);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
+
+  function drawPieChart(vulnCounts) {
+        // 准备数据用于饼状图
+        const pieData = Object.entries(vulnCounts).map(([type, count]) => ({
+            name: type,
+            value: count
+        }));
+
+        // 使用 ECharts 绘制饼状图
+        const pieChart = echarts.init(document.getElementById('vulnPieChart'));
+        const pieOption = {
+            tooltip: {
+                trigger: 'item'
+            },
+            series: [
+                {
+                    name: '漏洞类型',
+                    type: 'pie',
+                    radius: '50%',
+                    data: pieData,
+                    label: {
+                        color: 'white'  // 设置字体颜色为白色
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+    }
+
+
+    // 更新漏洞总数的卡片展示
+    function updateTotalVulns(totalVulns) {
+        const totalVulnsContainer = document.getElementById('totalVulnsContainer');
+        totalVulnsContainer.innerHTML = '';
+        totalVulns.toString().split('').forEach(digit => {
+            const card = document.createElement('div');
+            card.className = 'number-card';
+            card.textContent = digit;
+            totalVulnsContainer.appendChild(card);
+        });
+    }
+
+    // 填充表格数据
+    function updateVulnTable(vulnCounts, totalVulns) {
+        const tbody = document.getElementById('dataTable').querySelector('tbody');
+        tbody.innerHTML = '';  // 清空表格
+
+        Object.keys(vulnCounts).forEach(type => {
+            const count = vulnCounts[type];
+            const ratio = ((count / totalVulns) * 100).toFixed(2) + '%';  // 计算占比
+            const severity = count > 10 ? '高危' : (count > 5 ? '中危' : '低危');  // 根据数量决定危险等级
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${type}</td>
+            <td>${count}</td>
+            <td>${severity}</td>
+            <td>${ratio}</td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // 自动滚动功能
+    function setupTableAutoScroll() {
+        const tableContainer = document.getElementById('vulnDataTable');
+        const scrollSpeed = 50;
+
+        function scrollTable() {
+            tableContainer.scrollTop += 1;
+            if (tableContainer.scrollTop >= tableContainer.scrollHeight - tableContainer.clientHeight) {
+                tableContainer.scrollTop = 0;  // 回到顶部
+            }
+        }
+
+        let scrollInterval = setInterval(scrollTable, scrollSpeed);
+
+        // 鼠标移入时显示滚动条
+        tableContainer.addEventListener('mouseenter', () => {
+            tableContainer.style.overflowY = 'auto';
+        });
+
+        // 鼠标移出时隐藏滚动条
+        tableContainer.addEventListener('mouseleave', () => {
+            tableContainer.style.overflowY = 'hidden';
+        });
+    }
+
+    // 使用 Chart.js 绘制柱状图
+    function renderBarChart(vulnTypes) {
+        const labels = Object.keys(vulnTypes);
+        const counts = Object.values(vulnTypes);
+        const ctx = document.getElementById('vulnChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '漏洞数量',
+                    data: counts,
+                    backgroundColor: 'rgba(0, 207, 255, 0.2)',
+                    borderColor: 'rgba(0, 207, 255, 1)',
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        titleColor: 'white',
+                        bodyColor: 'white'
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white'
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+        // 获取数据并绘制图表
+        fetch('/monthly_data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.monthly_counts && data.daily_counts) {
+                drawMonthlyBarChart(data.monthly_counts, data.daily_counts);
+            } else {
+                console.error('Error: Missing required data in response:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching monthly data:', error);
+        });
+
+     
+
+        function drawMonthlyBarChart(monthlyCounts, dailyCounts) {
+            const months = monthlyCounts.map(item => item.month);
+            const counts = monthlyCounts.map(item => item.count);
+
+            // 初始化柱状图
+            const monthBarChart = echarts.init(document.getElementById('monthBarChart'));
+            const monthOption = {
+                title: {
+                    text: '每月漏洞总数',
+                    left: 'center',
+                    textStyle: {
+                    color: 'white' // 设置标题字体颜色为白色
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                },
+                xAxis: {
+                    type: 'category',
+                    data: months
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: counts,
+                    type: 'bar',
+                    itemStyle: {
+                        color: '#007BFF'
+                    }
+                }]
+            };
+
+            // 设置柱状图并显示
+            monthBarChart.setOption(monthOption);
+            document.getElementById('monthBarChart').style.display = 'block';
+
+            // 点击事件：显示折线图和返回按钮，隐藏柱状图
+            monthBarChart.on('click', function (params) {
+                const selectedMonth = params.name;
+                const filteredDailyCounts = dailyCounts.filter(item => item.release_date.startsWith(selectedMonth));
+
+                if (filteredDailyCounts.length > 0) {
+                    drawDailyLineChart(filteredDailyCounts);
+
+                    // 隐藏柱状图并显示折线图容器和返回按钮
+                    document.getElementById('monthBarChart').style.display = 'none';
+                    document.getElementById('dailyLineChartContainer').style.display = 'block';
+                    document.getElementById('backButton').style.display = 'inline-block';
+                } else {
+                    console.error('No data available for selected month:', selectedMonth);
+                }
+            });
+        }
+
+        function drawDailyLineChart(dailyCounts) {
+            const dates = dailyCounts.map(item => item.release_date);
+            const counts = dailyCounts.map(item => item.count);
+
+            // 初始化折线图
+            const dailyLineChart = echarts.init(document.getElementById('dailyLineChart'));
+            const lineOption = {
+                title: {
+                    text: '每月漏洞折线图',
+                    left: 'center',
+                    textStyle: {
+                    color: 'white' // 设置标题字体颜色为白色
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: dates
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: counts,
+                    type: 'line',
+                    itemStyle: {
+                        color: '#FF5733'
+                    }
+                }]
+            };
+
+            // 清除可能存在的旧数据，设置新的配置
+            dailyLineChart.clear();
+            dailyLineChart.setOption(lineOption);
+
+            // 返回按钮功能：点击后恢复到柱状图显示
+            document.getElementById('backButton').onclick = function () {
+                document.getElementById('dailyLineChartContainer').style.display = 'none';
+                document.getElementById('monthBarChart').style.display = 'block';
+            };
+        }
+    </script>
+
+</body>
+</html>
+
+               

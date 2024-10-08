@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动滚动表格示例</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0e0e0e;
+            /* 深色背景 */
+            color: #fff;
+            /* 白色字体 */
+            margin: 20px;
+        }
+
+        #vulnDataTable {
+            overflow-y: hidden;
+            /* 初始状态隐藏滚动条 */
+            height: 300px;
+            /* 设置表格高度 */
+            border: 1px solid #007acc;
+            /* 蓝色边框 */
+            border-radius: 10px;
+            /* 圆角 */
+            box-shadow: 0 0 15px rgba(0, 122, 204, 0.5);
+            /* 投影效果 */
+            position: relative;
+            background: linear-gradient(145deg, #1a1a1a, #0e0e0e);
+            /* 渐变背景 */
+        }
+
+        #dataTable {
+            width: 100%;
+            border-collapse: collapse;
+            position: relative;
+            /* 相对定位用于绝对定位表头 */
+        }
+
+        #dataTable th,
+        #dataTable td {
+            border: 1px solid #007acc;
+            /* 蓝色边框 */
+            padding: 10px;
+            text-align: left;
+            transition: background-color 0.3s;
+            /* 背景色过渡效果 */
+        }
+
+        #dataTable th {
+            background-color: #007acc;
+            /* 蓝色背景 */
+            color: #fff;
+            /* 白色字体 */
+            position: sticky;
+            /* 使表头固定 */
+            top: 0;
+            /* 固定到顶部 */
+            z-index: 10;
+            /* 确保表头在上层 */
+        }
+
+        #dataTable tr:hover {
+            background-color: rgba(0, 122, 204, 0.1);
+            /* 悬停效果 */
+        }
+
+        .icon {
+            margin-right: 8px;
+            /* 图标与文本之间的间隔 */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="vulnDataTable">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>漏洞类型</th>
+                    <th>漏洞数量</th>
+                    <th>危险等级</th>
+                    <th>漏洞占比</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        window.onload = function () {
+            // 创建假数据
+            const sampleData = [
+                { type: '类型A', count: 5, severity: '高危', icon: 'fas fa-exclamation-triangle' },
+                { type: '类型B', count: 10, severity: '低危', icon: 'fas fa-check-circle' },
+                { type: '类型C', count: 3, severity: '高危', icon: 'fas fa-exclamation-circle' },
+                { type: '类型D', count: 2, severity: '低危', icon: 'fas fa-check' },
+                { type: '类型E', count: 1, severity: '超危', icon: 'fas fa-skull-crossbones' },
+                { type: '类型F', count: 4, severity: '低危', icon: 'fas fa-check-circle' },
+                { type: '类型G', count: 8, severity: '高危', icon: 'fas fa-exclamation-triangle' },
+                { type: '类型H', count: 6, severity: '低危', icon: 'fas fa-check' },
+                { type: '类型I', count: 7, severity: '高危', icon: 'fas fa-exclamation-circle' },
+                { type: '类型J', count: 9, severity: '超危', icon: 'fas fa-skull-crossbones' }
+            ];
+
+            const totalVulns = sampleData.reduce((sum, row) => sum + row.count, 0); // 计算总漏洞数
+
+            // 填充表格数据
+            const tbody = document.getElementById('dataTable').querySelector('tbody');
+            sampleData.forEach(row => {
+                const ratio = ((row.count / totalVulns) * 100).toFixed(2) + '%'; // 计算占比
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td>${row.type}</td>
+            <td>${row.count}</td>
+            <td><i class="${row.icon} icon"></i>${row.severity}</td>
+            <td>${ratio}</td>
+        `;
+                tbody.appendChild(tr);
+            });
+
+            // 自动滚动功能
+            const tableContainer = document.getElementById('vulnDataTable');
+            const scrollSpeed = 50; // 滚动速度
+
+            function scrollTable() {
+                tableContainer.scrollTop += 1; // 向下滚动
+                if (tableContainer.scrollTop >= tableContainer.scrollHeight - tableContainer.clientHeight) {
+                    tableContainer.scrollTop = 0; // 如果到达底部则返回顶部
+                }
+            }
+
+            let scrollInterval = setInterval(scrollTable, scrollSpeed);
+
+            // 鼠标移入时显示滚动条
+            tableContainer.addEventListener('mouseenter', () => {
+                tableContainer.style.overflowY = 'auto'; // 显示滚动条
+            });
+
+            // 鼠标移出时隐藏滚动条
+            tableContainer.addEventListener('mouseleave', () => {
+                tableContainer.style.overflowY = 'hidden'; // 隐藏滚动条
+            });
+        };
+    </script>
+
+</body>
+
+</html>

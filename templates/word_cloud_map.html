@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>词云展示</title>
+    <style>
+        html, body {
+            overflow: hidden; /* 隐藏所有滚动条 */
+            height: 100%; /* 确保页面填满视口 */
+            margin: 0; /* 去掉默认的边距 */
+            padding: 0; /* 去掉默认的内边距 */
+        }
+        body {
+            text-align: center;
+            margin: 50px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        #header {
+            position: fixed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 20px;
+            width: 98%;
+            background: linear-gradient(to right, #002B55, #003366);
+            border-bottom: 2px solid #007ACC;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            margin-top: -45px;
+            margin-left: -50px;
+            z-index: 10;
+        }
+
+        /* 左侧标题样式 */
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            color: #00CFFF;
+            font-weight: bold;
+            padding: 5px 15px;
+            border: 1px solid #00CFFF;
+            border-radius: 20px 0 0 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* 右侧按钮和图标容器 */
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 图标样式 */
+        .header-icon {
+            font-size: 20px;
+            color: #00CFFF;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        .header-icon:hover {
+            color: #00A3CC;
+        }        
+
+        /* 退出按钮样式 */
+        .logout-button {
+            padding: 5px 15px;
+            font-size: 14px;
+            color: #FFFFFF;
+            background: #007ACC;
+            border: 1px solid #007ACC;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        /* 设置标题颜色 */
+        h1 {
+            color: white; /* 设置字体颜色为白色 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 标题栏 -->
+    <div id="header">
+        <div class="header-left">
+            <span class="header-title">洞察云防 —— 漏洞态势观测站</span>
+        </div>
+        <div class="header-right">
+            <i class="fas fa-shield-alt header-icon"></i>
+            <i class="fas fa-cog header-icon"></i>
+            <button class="logout-button" onclick="window.location.href='http://127.0.0.1:5000/'">主界面</button>
+        </div>
+    </div>    
+    
+    <video id="background-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='back_ground.mp4') }}" type="video/mp4">
+        您的浏览器不支持 HTML5 视频。
+    </video>
+    
+    <div id="particles-js"></div>
+
+    <h1>词云展示</h1>
+    <img src="{{ url_for('static', filename='wordcloud.png') }}" alt="Word Cloud" style="margin-top: -20px; margin-bottom: 20px;">
+    <br>
+    <a href="{{ url_for('dashboard') }}">返回仪表板</a>
+</body>
+</html>
