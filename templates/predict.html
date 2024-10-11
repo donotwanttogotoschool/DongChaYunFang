@@ -11,13 +11,10 @@
         html,
         body {
             overflow: hidden;
-            /* 隐藏所有滚动条 */
             margin: 0;
             padding: 0;
             height: 100%;
             font-family: Arial, sans-serif;
-            padding: 0;
-            /* 去掉默认的内边距 */
         }
 
         #container {
@@ -44,11 +41,8 @@
             height: 55%;
             background-image: url('{{ url_for("static", filename="/新主页面-源文件/转动地球的背景.png") }}');
             background-size: cover;
-            /* 让背景图片覆盖整个容器 */
             background-position: center;
-            /* 背景图片居中 */
             z-index: 1;
-            /* 设置 z-index 低于动态图片 */
         }
 
         .dynamic-image {
@@ -93,7 +87,6 @@
             display: flex;
             align-items: center;
             margin-left: 87%;
-            /* 移除左外边距 */
         }
 
         .header-icon {
@@ -140,18 +133,38 @@
             object-fit: cover;
         }
 
-        /* 图表容器 */
-        .chart-container {
+        #custom-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        /* 左侧图表容器 */
+        .chart-container-left {
             width: 80%;
             margin: auto;
             padding: 20px;
             background: rgba(0, 43, 85, 0.6);
-            /* 半透明深蓝色背景 */
             box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.6);
-            /* 发光效果 */
             border-radius: 10px;
             border: 2px solid rgba(0, 255, 255, 0.3);
-            /* 边框颜色 */
+            position: relative;
+            top: 130px;
+        }
+
+        /* 右侧图表容器 */
+        .chart-container-right {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: rgba(0, 43, 85, 0.6);
+            box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.6);
+            border-radius: 10px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            position: relative;
+            top: -50px;
         }
 
         /* 标题栏样式 */
@@ -160,20 +173,18 @@
             margin: 20px auto;
             padding: 10px 20px;
             background: rgba(0, 43, 85, 0.8);
-            /* 半透明深蓝色背景 */
             box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.6);
-            /* 发光效果 */
             border-radius: 10px;
             border: 2px solid rgba(0, 255, 255, 0.3);
-            /* 边框颜色 */
             text-align: center;
+            position: relative;
+            top: -50px;
         }
 
         .title-bar h1 {
             margin: 0;
             font-size: 24px;
             color: #00CFFF;
-            /* 浅蓝色字体 */
         }
     </style>
 </head>
@@ -190,14 +201,17 @@
         <div class="header-right">
             <i class="fas fa-shield-alt header-icon"></i>
             <i class="fas fa-cog header-icon"></i>
-            <button class="logout-button" onclick="window.location.href='http://127.0.0.1:5000/dashboard'">退出</button>
+            <button class="logout-button" onclick="window.location.href='http://127.0.0.1:5000/dashboard'">主界面</button>
         </div>
     </div>
 
-    <div id="container">
-        <!-- 左侧转动地球图片 -->
+    <div id="custom-container">
+        <!-- 左侧转动地球图片和图表 -->
         <div class="background-image">
             <img src="{{ url_for('static', filename='转动地球.gif') }}" alt="Rotating Earth" class="dynamic-image">
+            <div class="chart-container-left">
+                <canvas id="peakChart"></canvas>
+            </div>
         </div>
 
         <!-- 右侧漏洞预测内容 -->
@@ -206,7 +220,7 @@
             <div class="title-bar">
                 <h1>漏洞预测结果</h1>
             </div>
-            <div class="chart-container">
+            <div class="chart-container-right">
                 <canvas id="vulnerabilityChart" width="600" height="400"></canvas>
             </div>
         </div>
@@ -218,6 +232,69 @@
     </video>
 
     <script>
+        // 从后端获取漏洞预测数据
+        async function fetchVulnerabilityData() {
+            const response = await fetch('/get_top_vulnerabilities_2024');
+            const data = await response.json();
+            return data;
+        }
+
+        async function generatePeakChart() {
+            const vulnerabilityData = await fetchVulnerabilityData();
+
+            const labels = vulnerabilityData.map(item => item.vulnerability_type);
+            const data = vulnerabilityData.map(item => item.predicted_count);
+
+            const ctx = document.getElementById('peakChart').getContext('2d');
+
+            // 手动设置每根柱子的宽度
+            const barThickness = [30, 50, 70, 50, 30];  // 设置不同宽度来实现峰状效果
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '2024年漏洞预测 (高危漏洞)',
+                        data: data,
+                        backgroundColor: 'rgba(0, 162, 255, 0.5)',
+                        borderColor: 'rgba(0, 162, 255, 1)',
+                        borderWidth: 2,
+                        barThickness: barThickness  // 自定义每根柱子的宽度，形成峰状效果
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: '2024年漏洞预测峰状柱状图'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+        // 加载并生成图表
+        generatePeakChart();
         async function fetchPredictionData() {
             try {
                 const response = await fetch('/predict_vulnerabilities');

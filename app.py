@@ -7,6 +7,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import os
 import subprocess
+import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -21,6 +22,45 @@ def get_m_data(query=None):
         df = pd.read_sql_query('SELECT * FROM vulnerabilities', conn)
     conn.close()
     return df
+
+# 获取2023年的漏洞数据并做预测
+def predict_top_vulnerabilities():
+    # 查询2023年高危漏洞数据
+    query = """
+    SELECT vulnerability_type, COUNT(*) as count
+    FROM vulnerabilities
+    WHERE strftime('%Y', release_date) = '2023' AND severity_level = '高危'
+    GROUP BY vulnerability_type
+    """
+    df = get_m_data(query)
+    
+    # 使用 ARIMA 模型预测2024年数据
+    predictions = {}
+    for vulnerability_type in df['vulnerability_type'].unique():
+        # 创建时间序列模型
+        count_data = df[df['vulnerability_type'] == vulnerability_type]['count']
+        if len(count_data) >= 5:  # ARIMA 要求至少有足够的数据点
+            model = ARIMA(count_data, order=(5, 1, 0))
+            model_fit = model.fit()
+            forecast = model_fit.forecast(steps=12)  # 预测接下来12个月
+            predictions[vulnerability_type] = forecast.sum()  # 总数量预测
+        else:
+            predictions[vulnerability_type] = count_data.mean() * 12  # 用平均值估算
+
+    # 将预测值按照数量排序，返回Top 5
+    sorted_predictions = sorted(predictions.items(), key=lambda x: x[1], reverse=True)[:5]
+
+    # 返回预测结果
+    return sorted_predictions
+# 定义API接口，返回预测的Top 5漏洞
+@app.route('/get_top_vulnerabilities_2024')
+def get_top_vulnerabilities_2024():
+    try:
+        predicted_vulnerabilities = predict_top_vulnerabilities()
+        result = [{'vulnerability_type': v[0], 'predicted_count': v[1]} for v in predicted_vulnerabilities]
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # 预测每个严重等级的漏洞数量
 def predict_vulnerabilities_by_severity():
