@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "build": {
+    "env": {
+      "RUSTUP_HOME": "/root/.rustup",
+      "CARGO_HOME": "/root/.cargo",
+      "PATH": "/root/.cargo/bin:$PATH"
+    },
+    "scripts": {
+      "postinstall": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env"
+    }
+  },
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ]
+}
