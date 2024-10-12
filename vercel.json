@@ -9,12 +9,6 @@
       "postinstall": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env && rustc --version && pip install --no-deps -r requirements.txt"
     }
   },
-  "builds": [
-    {
-      "src": "app.py",
-      "use": "@vercel/python"
-    }
-  ],
   "routes": [
     {
       "src": "/(.*)",
