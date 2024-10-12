@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 复制应用代码到工作目录
 COPY . /app
 
+# 复制数据库文件
+COPY vulnerability_data.db /app/vulnerability_data.db
+
 # 暴露Flask应用的默认端口（如5000）
 EXPOSE 5000
 
