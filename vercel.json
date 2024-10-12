@@ -3,8 +3,7 @@
   "build": {
     "env": {
       "RUSTUP_HOME": "/root/.rustup",
-      "CARGO_HOME": "/root/.cargo",
-      "PATH": "/root/.cargo/bin:$PATH"
+      "CARGO_HOME": "/root/.cargo"
     },
     "scripts": {
       "postinstall": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env"
