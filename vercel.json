@@ -6,7 +6,7 @@
       "CARGO_HOME": "/root/.cargo"
     },
     "scripts": {
-      "postinstall": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env"
+      "postinstall": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env && rustc --version"
     }
   },
   "builds": [
