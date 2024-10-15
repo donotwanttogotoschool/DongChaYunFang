@@ -14,6 +14,46 @@ app.secret_key = 'your_secret_key'
 
 DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'vulnerability_data.db')
 
+@app.route('/vulnerability_stats')
+def get_vulnerability_stats():
+    try:
+        query = """
+        SELECT vulnerability_type, severity_level, COUNT(*) as count
+        FROM vulnerabilities
+        GROUP BY vulnerability_type, severity_level
+        """
+        df = get_m_data(query)
+        
+        vuln_counts = {}  # 用于表格统计的漏洞数据
+        vuln_types = {}   # 用于柱状图的漏洞类型数据
+        total_vulns = 0   # 总漏洞数
+
+        # 遍历数据，统计总数、各类型数量及高危/超危漏洞数量
+        for _, row in df.iterrows():
+            vuln_type = row['vulnerability_type']
+            severity = row['severity_level']
+            count = row['count']
+            
+            # 统计总漏洞数
+            total_vulns += count
+
+            # 按类型统计漏洞数量
+            vuln_types[vuln_type] = vuln_types.get(vuln_type, 0) + count
+
+            # 统计高危和超危漏洞数量
+            if severity in ['高危', '超危']:
+                vuln_counts[vuln_type] = vuln_counts.get(vuln_type, 0) + count
+
+        # 返回处理结果
+        return jsonify({
+            'total_vulns': total_vulns,
+            'vuln_types': vuln_types,
+            'vuln_counts': vuln_counts
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 def get_m_data(query=None):
     conn = sqlite3.connect(DATABASE_PATH)
     if query:

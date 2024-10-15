@@ -562,7 +562,7 @@
         <div class="header-right">
             <i class="fas fa-shield-alt header-icon"></i> <!-- 防护图标 -->
             <i class="fas fa-cog header-icon"></i> <!-- 设置图标 -->
-            <button class="logout-button" onclick="window.location.href='http://127.0.0.1:5000/'">退出</button>
+            <button class="logout-button" onclick="window.location.href='../'">退出</button>
             <!-- 退出按钮 -->
         </div>
     </div>
@@ -966,53 +966,35 @@
             });
         });
 
-        window.onload = function () {
-            // fetch 请求
-            fetch('/data')
-                .then(response => response.json())
-                .then(data => {
-                    // 初始化计数器和数据结构
-                    const vulnCounts = {};  // 用于表格统计的漏洞数据
-                    const vulnTypes = {};  // 用于柱状图的漏洞类型数据
-                    let totalVulns = 0;  // 总漏洞数
+    window.onload = function () {
+        // fetch 请求
+        fetch('/vulnerability_stats')
+            .then(response => response.json())
+            .then(data => {
+                // 获取后端返回的统计数据
+                const vulnCounts = data.vuln_counts;   // 用于表格统计的漏洞数据
+                const vulnTypes = data.vuln_types;     // 用于柱状图的漏洞类型数据
+                const totalVulns = data.total_vulns;   // 总漏洞数
 
-                    // 遍历数据，统计总数、各类型数量及高危/超危漏洞数量
-                    data.forEach(vuln => {
-                        const type = vuln.vulnerability_type;
-                        const severity = vuln.severity_level;
+                // 更新漏洞总数卡片
+                updateTotalVulns(totalVulns);
 
-                        // 统计总漏洞数
-                        totalVulns++;
+                // 更新表格数据
+                updateVulnTable(vulnCounts, totalVulns);
 
-                        // 按类型统计漏洞数量
-                        vulnTypes[type] = (vulnTypes[type] || 0) + 1;
+                // 设置自动滚动
+                setupTableAutoScroll();
 
-                        // 统计高危和超危漏洞数量
-                        if (severity === '高危' || severity === '超危') {
-                            vulnCounts[type] = (vulnCounts[type] || 0) + 1;
-                        }
-                    });
+                // 绘制柱状图
+                renderBarChart(vulnTypes);
 
-                    // 更新漏洞总数卡片
-                    updateTotalVulns(totalVulns);
-
-                    // 更新表格数据
-                    updateVulnTable(vulnCounts, totalVulns);
-
-                    // 设置自动滚动
-                    setupTableAutoScroll();
-
-                    // 绘制柱状图
-                    renderBarChart(vulnTypes);
-
-                    // 调用饼状图绘制函数
-                    drawPieChart(vulnCounts);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
-        };
-
+                // 调用饼状图绘制函数
+                drawPieChart(vulnCounts);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    };
 
         function drawPieChart(vulnCounts) {
             // 准备数据用于饼状图
